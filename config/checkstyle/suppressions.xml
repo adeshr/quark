@@ -20,6 +20,6 @@ limitations under the License.
 -->
 <suppressions>
   <!-- Add files here on which checkstyle needs to be suppressed. -->
-
+<suppress files="com-qubole-quark-remote-jdbc.properties" checks=".*"/>
 <suppress checks=".*" files="src[/\\]test[/\\]java[/\\]"/>
 </suppressions>

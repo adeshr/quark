@@ -354,6 +354,8 @@
         <module>plugins</module>
         <module>jdbc</module>
         <module>catalog</module>
+        <module>client</module>
+        <module>server</module>
     </modules>
 
 </project>
