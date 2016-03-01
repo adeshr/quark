@@ -72,7 +72,7 @@ public class EndToEndTest {
             + "     \"url\":\"jdbc:mysql://localhost.localdomain:3306/nezha_rstore\","
             + "     \"username\":\"root\","
             + "     \"password\":\"\","
-            + "     \"encrypt_key\":\"easy\""
+            + "     \"encrypt_key\":\"key\""
             + "   }";
     props.put("dbCredentials", jsonString);
     props.put("schemaFactory", "com.qubole.quark.catalog.db.SchemaFactory");

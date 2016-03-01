@@ -33,18 +33,50 @@ import signal
 import subprocess
 import sys
 import tempfile
+import fnmatch
 
 try:
     import daemon
     daemon_supported = True
 except ImportError:
     # daemon script not supported on some platforms (windows?)
+    print "CAME HERE"
     daemon_supported = False
 
-import quark_utils
+def find(pattern, classPaths):
+    paths = classPaths.split(os.pathsep)
 
-quark_utils.setPath()
+    # for each class path
+    for path in paths:
+        # remove * if it's at the end of path
+        if ((path is not None) and (len(path) > 0) and (path[-1] == '*')) :
+            path = path[:-1]
 
+        for root, dirs, files in os.walk(path):
+            # sort the file names so *-client always precedes *-thin-client
+            files.sort()
+            for name in files:
+                if fnmatch.fnmatch(name, pattern):
+                    return os.path.join(root, name)
+
+    return ""
+
+def getPath():
+    QUARK_SERVER_JAR_PATTERN = "quark-server-*.jar"
+
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.join(current_dir, "..", "server", "target", "*")
+
+    if ((path is not None) and (len(path) > 0) and (path[-1] == '*')) :
+        path = path[:-1]
+
+    for root, dirs, files in os.walk(path):
+        for name in files:
+            if fnmatch.fnmatch(name, QUARK_SERVER_JAR_PATTERN):
+                return os.path.join(root, name)
+
+
+quark_server_jar = getPath()
 command = None
 args = sys.argv
 
@@ -90,7 +122,7 @@ else:
 
 # The command is run through subprocess so environment variables are automatically inherited
 java_cmd = '%(java)s -cp ' + \
-           quark_utils.quark_server_jar + \
+           quark_server_jar + \
            " -Dproc_quarkserver" + \
            " -Dpsql.root.logger=%(root_logger)s" + \
            " -Dpsql.log.dir=%(log_dir)s" + \
@@ -120,7 +152,7 @@ if command == 'start':
         os.makedirs(d)
     with open(out_file_path, 'a+') as out:
         context = daemon.DaemonContext(
-                pidfile = daemon.PidFile(pid_file_path, 'Query Server already running, PID file found: %s' % pid_file_path),
+                pidfile = pid_file_path,
                 stdout = out,
                 stderr = out,
         )
@@ -166,8 +198,6 @@ elif command == 'stop':
     os.kill(pid, signal.SIGTERM)
 
 else:
-    # run in the foreground using defaults from log4j.properties
     cmd = java_cmd % {'java': java, 'root_logger': 'INFO,console', 'log_dir': '.', 'log_file': 'psql.log'}
-    # Because shell=True is not set, we don't have to alter the environment
     child = subprocess.Popen(cmd.split())
     sys.exit(child.wait())

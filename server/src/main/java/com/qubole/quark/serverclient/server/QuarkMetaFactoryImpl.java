@@ -19,7 +19,6 @@ import org.apache.calcite.avatica.Meta;
 import org.apache.calcite.avatica.jdbc.JdbcMeta;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -41,22 +40,12 @@ public class QuarkMetaFactoryImpl implements Meta.Factory {
         + "     \"url\":\"jdbc:mysql://localhost.localdomain:3306/nezha_rstore\","
         + "     \"username\":\"root\","
         + "     \"password\":\"\","
-        + "     \"encrypt_key\":\"easy\""
+        + "     \"encrypt_key\":\"key\""
         + "   }";
     props.put("dbCredentials", jsonString);
     props.put("schemaFactory", "com.qubole.quark.catalog.db.SchemaFactory");
 
     try {
-      final String url;
-      if (args.size() == 0) {
-        url = "jdbc:quark:/home/dev/src/quark/server/target/test-classes/TpcdsModel.json";
-      } else if (args.size() == 1) {
-        url = args.get(0);
-      } else {
-        throw new RuntimeException(
-            "0 or 1 argument expected. Received " + Arrays.toString(args.toArray()));
-      }
-      // TODO: what about -D configs passed in from cli? How do they get pushed down?
       return new JdbcMeta("jdbc:quark:", props);
     } catch (SQLException e) {
       throw new RuntimeException(e);
