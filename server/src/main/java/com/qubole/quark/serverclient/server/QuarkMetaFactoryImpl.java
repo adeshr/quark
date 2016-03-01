@@ -16,6 +16,7 @@
 package com.qubole.quark.serverclient.server;
 
 import org.apache.calcite.avatica.Meta;
+import org.apache.calcite.avatica.jdbc.JdbcMeta;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -23,23 +24,17 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Bridge between Phoenix and Avatica.
+ * Bridge between Quark and Avatica.
  */
-public class QuarkMetaFactoryImpl implements QuarkMetaFactory {
+public class QuarkMetaFactoryImpl implements Meta.Factory {
 
   // invoked via reflection
   public QuarkMetaFactoryImpl() {
     super();
   }
 
-  // invoked via reflection
-  //public QuarkMetaFactoryImpl(Configuration conf) {
-  //  super(conf);
-  //}
-
   @Override
   public Meta create(List<String> args) {
-    //Configuration conf = Preconditions.checkNotNull(getConf(), "Configuration must not be null.");
     Properties props = new Properties();
     String jsonString =
         "   {"
@@ -50,10 +45,7 @@ public class QuarkMetaFactoryImpl implements QuarkMetaFactory {
         + "   }";
     props.put("dbCredentials", jsonString);
     props.put("schemaFactory", "com.qubole.quark.catalog.db.SchemaFactory");
-    //props.put("url", "jdbc:mysql://localhost.localdomain:3306/nezha_rstore");
-    //props.put("username", "sa");
-    //props.put("password", "");
-    //info.putAll(conf.getValByRegex("avatica.*"));
+
     try {
       final String url;
       if (args.size() == 0) {
@@ -65,7 +57,7 @@ public class QuarkMetaFactoryImpl implements QuarkMetaFactory {
             "0 or 1 argument expected. Received " + Arrays.toString(args.toArray()));
       }
       // TODO: what about -D configs passed in from cli? How do they get pushed down?
-      return new QuarkMeta("jdbc:quark:", props);
+      return new JdbcMeta("jdbc:quark:", props);
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }

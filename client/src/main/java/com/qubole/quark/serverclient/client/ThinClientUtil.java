@@ -16,11 +16,9 @@
 package com.qubole.quark.serverclient.client;
 
 /**
- * Utilities for thin clients.
+ * Utility for Quark thin clients.
  */
 public final class ThinClientUtil {
-  // The default serialization is also defined in QueryServicesOptions. phoenix-server-client
-  // currently doesn't depend on phoenix-core so we have to deal with the duplication.
   private static final String DEFAULT_SERIALIZATION = "PROTOBUF";
 
   private ThinClientUtil() {}

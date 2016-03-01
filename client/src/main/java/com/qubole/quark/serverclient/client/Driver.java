@@ -18,7 +18,7 @@ package com.qubole.quark.serverclient.client;
 import org.apache.calcite.avatica.DriverVersion;
 
 /**
- * Driver for thin clients.
+ * Driver for Quark thin client.
  */
 public class Driver extends org.apache.calcite.avatica.remote.Driver {
 

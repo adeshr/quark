@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2015. Qubole Inc
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package com.qubole.quark.serverclient.client;
 
 import com.qubole.quark.serverclient.server.Main;
@@ -13,9 +28,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 /**
- * Created by dev on 2/24/16.
+ * Created by adeshr on 2/24/16.
  */
-public class Client {
+public class EndToEndTest {
 
   public static final String h2Url = "jdbc:h2:mem:TpcdsTest;DB_CLOSE_DELAY=-1";
   public static final String cubeUrl = "jdbc:h2:mem:TpcdsCubes;DB_CLOSE_DELAY=-1";
@@ -41,7 +56,7 @@ public class Client {
     Connection connection = DriverManager.getConnection(dbUrl, props);
 
     Statement stmt = connection.createStatement();
-    java.net.URL url = Client.class.getResource("/" + filename);
+    java.net.URL url = EndToEndTest.class.getResource("/" + filename);
     java.nio.file.Path resPath = java.nio.file.Paths.get(url.toURI());
     String sql = new String(java.nio.file.Files.readAllBytes(resPath), "UTF8");
 
