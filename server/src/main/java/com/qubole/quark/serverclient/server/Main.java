@@ -111,7 +111,6 @@ public final class Main implements Runnable {
       LOG.debug("Listening on port " + port);
       Meta.Factory factory =
           factoryClass.getDeclaredConstructor().newInstance();
-      LOG.info("CREATING META");
       Meta meta = factory.create(Collections.EMPTY_LIST); //Arrays.asList(args));
       final HandlerFactory handlerFactory = new HandlerFactory();
       Service service = new LocalService(meta);
