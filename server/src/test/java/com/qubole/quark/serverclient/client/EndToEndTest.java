@@ -94,6 +94,5 @@ public class EndToEndTest {
     assertThat(wrOrderNumber.size(), equalTo(1));
     assertThat(wrItemSk.get(0), equalTo("1"));
     assertThat(wrOrderNumber.get(0), equalTo("10"));
-    System.out.println("abcd");
   }
 }
