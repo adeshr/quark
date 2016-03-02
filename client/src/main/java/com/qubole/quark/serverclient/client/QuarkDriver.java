@@ -18,26 +18,26 @@ package com.qubole.quark.serverclient.client;
 import org.apache.calcite.avatica.DriverVersion;
 
 /**
- * Driver for Quark thin client.
+ * QuarkDriver for Quark thin client.
  */
-public class Driver extends org.apache.calcite.avatica.remote.Driver {
+public class QuarkDriver extends org.apache.calcite.avatica.remote.Driver {
 
   public static final String CONNECT_STRING_PREFIX = "jdbc:quark:thin:";
 
   static {
-    new Driver().register();
+    new QuarkDriver().register();
   }
 
-  public Driver() {
+  public QuarkDriver() {
     super();
   }
 
   @Override
   protected DriverVersion createDriverVersion() {
     return DriverVersion.load(
-        Driver.class,
+        QuarkDriver.class,
         "org-apache-calcite-jdbc.properties",
-        "Quark Thin Client JDBC Driver",
+        "Quark Thin Client JDBC QuarkDriver",
         "unknown version",
         "Quark",
         "unknown version");

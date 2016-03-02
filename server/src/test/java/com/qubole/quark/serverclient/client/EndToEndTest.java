@@ -17,7 +17,6 @@ package com.qubole.quark.serverclient.client;
 
 import com.qubole.quark.serverclient.server.Main;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -40,6 +39,10 @@ public class EndToEndTest {
   @BeforeClass
   public static void setUp() throws SQLException, IOException, URISyntaxException,
       ClassNotFoundException {
+    String[] args = new String [1];
+    args[0] = "jsonCatalog.json";
+    new Thread(new Main(args)).start();
+
     setupTables(h2Url, "tpcds.sql");
     setupTables(cubeUrl, "tpcds_cubes.sql");
     setupTables(viewUrl, "tpcds_views.sql");
@@ -48,7 +51,6 @@ public class EndToEndTest {
   public static void setupTables(String dbUrl, String filename)
       throws ClassNotFoundException, SQLException, IOException, URISyntaxException {
 
-    new Thread(new Main()).start();
     Class.forName("org.h2.Driver");
     Properties props = new Properties();
     props.setProperty("user", "sa");
@@ -64,22 +66,12 @@ public class EndToEndTest {
     stmt.execute(sql);
   }
 
-  @Ignore
+  @Test
   public void testClient() throws SQLException, ClassNotFoundException {
-    Properties props = new Properties();
-    String jsonString =
-        "   {"
-            + "     \"url\":\"jdbc:mysql://localhost.localdomain:3306/nezha_rstore\","
-            + "     \"username\":\"root\","
-            + "     \"password\":\"\","
-            + "     \"encrypt_key\":\"key\""
-            + "   }";
-    props.put("dbCredentials", jsonString);
-    props.put("schemaFactory", "com.qubole.quark.catalog.db.SchemaFactory");
     Class.forName("com.qubole.quark.jdbc.QuarkDriver");
-    Driver d = new Driver();
+    QuarkDriver d = new QuarkDriver();
     Class.forName("org.h2.Driver");
-    Connection connection = d.connect(ThinClientUtil.getConnectionUrl("0.0.0.0", 8765), props);
+    Connection connection = d.connect(ThinClientUtil.getConnectionUrl("0.0.0.0", 8765), new Properties());
 
     String query = "select * from canonical.public.web_returns";
     ResultSet resultSet = connection.createStatement().executeQuery(query);

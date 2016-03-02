@@ -18,7 +18,12 @@ package com.qubole.quark.serverclient.server;
 import org.apache.calcite.avatica.Meta;
 import org.apache.calcite.avatica.jdbc.JdbcMeta;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -35,19 +40,29 @@ public class QuarkMetaFactoryImpl implements Meta.Factory {
   @Override
   public Meta create(List<String> args) {
     Properties props = new Properties();
-    String jsonString =
-        "   {"
-        + "     \"url\":\"jdbc:mysql://localhost.localdomain:3306/nezha_rstore\","
-        + "     \"username\":\"root\","
-        + "     \"password\":\"\","
-        + "     \"encrypt_key\":\"key\""
-        + "   }";
-    props.put("dbCredentials", jsonString);
-    props.put("schemaFactory", "com.qubole.quark.catalog.db.SchemaFactory");
-
+    String url = "jdbc:quark:";
     try {
-      return new JdbcMeta("jdbc:quark:", props);
-    } catch (SQLException e) {
+      if (args.size() == 1 || args.size() == 2) {
+        // Find absolute file path to load json
+        String filePath = getClass().getResource("/" + args.get(0)).getPath();
+        ObjectMapper objectMapper = new ObjectMapper();
+        CatalogDetail catalogDetail =
+            objectMapper.readValue(new File(filePath), CatalogDetail.class);
+
+        // If dbCredentials are not present, than json Catalog is present in file
+        if (catalogDetail.dbCredentials == null && catalogDetail.schemaFactory == null) {
+          url = url + filePath;
+        } else if (catalogDetail.dbCredentials != null) {
+          props.put("dbCredentials", catalogDetail.dbCredentials);
+          props.put("schemaFactory", catalogDetail.schemaFactory);
+        }
+
+      } else {
+        throw new RuntimeException(
+            "1 or 2 argument expected. Received " + Arrays.toString(args.toArray()));
+      }
+      return new JdbcMeta(url, props);
+    } catch (SQLException | IOException e) {
       throw new RuntimeException(e);
     }
   }

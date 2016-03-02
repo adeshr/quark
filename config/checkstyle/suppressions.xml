@@ -20,5 +20,6 @@ limitations under the License.
 -->
 <suppressions>
   <!-- Add files here on which checkstyle needs to be suppressed. -->
-<suppress checks=".*" files="src[/\\]test[/\\]java[/\\]"/>
+  <suppress files="Main.java" checks="Header"/>
+  <suppress checks=".*" files="src[/\\]test[/\\]java[/\\]"/>
 </suppressions>

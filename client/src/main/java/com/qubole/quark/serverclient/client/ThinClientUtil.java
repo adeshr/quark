@@ -35,7 +35,7 @@ public final class ThinClientUtil {
                                         String hostname,
                                         int port,
                                         String serialization) {
-    String urlFmt = Driver.CONNECT_STRING_PREFIX + "url=%s://%s:%s;serialization=%s";
+    String urlFmt = QuarkDriver.CONNECT_STRING_PREFIX + "url=%s://%s:%s;serialization=%s";
     return String.format(urlFmt, protocol, hostname, port, serialization);
   }
 }

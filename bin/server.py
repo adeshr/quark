@@ -172,7 +172,7 @@ elif command == 'stop':
 
     print "stopping Query Server pid %s" % pid
     with open(out_file_path, 'a+') as out:
-        print >> out, "%s terminating Query Server" % datetime.datetime.now()
+        print >> out, "%s terminating Server" % datetime.datetime.now()
     os.kill(pid, signal.SIGTERM)
 
 else:
