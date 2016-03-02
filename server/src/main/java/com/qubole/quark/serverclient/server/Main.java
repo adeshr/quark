@@ -38,7 +38,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A query server for Phoenix over Calcite's Avatica.
+ * A query server for Quark over Calcite's Avatica.
  */
 public final class Main implements Runnable {
 
