@@ -143,7 +143,7 @@ public final class Main implements Runnable {
     }
 
     Handler handler = handlerFactory.getHandler(service, serialization);
-    LOG.info("Instantiated " + handler.getClass() + " for QueryServer");
+    LOG.info("Instantiated " + handler.getClass() + " for Quark Server");
 
     return handler;
   }

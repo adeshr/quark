@@ -22,7 +22,7 @@
 #
 # Script to handle launching the query server process.
 #
-# usage: queryserver.py [start|stop|makeWinServiceDesc] [-Dhadoop=configs]
+# usage: server.py [start|stop|makeWinServiceDesc] [args]
 #
 
 import datetime
@@ -32,34 +32,13 @@ import os.path
 import signal
 import subprocess
 import sys
-import tempfile
 import fnmatch
-
 try:
     import daemon
+    from daemon import pidfile
     daemon_supported = True
 except ImportError:
-    # daemon script not supported on some platforms (windows?)
-    print "CAME HERE"
     daemon_supported = False
-
-def find(pattern, classPaths):
-    paths = classPaths.split(os.pathsep)
-
-    # for each class path
-    for path in paths:
-        # remove * if it's at the end of path
-        if ((path is not None) and (len(path) > 0) and (path[-1] == '*')) :
-            path = path[:-1]
-
-        for root, dirs, files in os.walk(path):
-            # sort the file names so *-client always precedes *-thin-client
-            files.sort()
-            for name in files:
-                if fnmatch.fnmatch(name, pattern):
-                    return os.path.join(root, name)
-
-    return ""
 
 def getPath():
     QUARK_SERVER_JAR_PATTERN = "quark-server-*.jar"
@@ -89,10 +68,10 @@ if len(args) > 1:
         command = 'makeWinServiceDesc'
 
 if command:
-    # Pull off queryserver.py and the command
+    # Pull off server.py and the command
     args = args[2:]
 else:
-    # Just pull off queryserver.py
+    # Just pull off server.py
     args = args[1:]
 
 if os.name == 'nt':
@@ -102,7 +81,8 @@ else:
     args = " ".join([pipes.quote(v) for v in args])
 
 java_home = os.getenv('JAVA_HOME')
-quark_log_dir = os.path.join(tempfile.gettempdir())
+
+quark_log_dir = os.path.dirname(os.path.abspath(__file__))
 quark_file_basename = 'quark-server-%s' % getpass.getuser()
 quark_log_file = '%s.log' % quark_file_basename
 quark_out_file = '%s.out' % quark_file_basename
@@ -110,15 +90,12 @@ quark_pid_file = '%s.pid' % quark_file_basename
 
 log_file_path = os.path.join(quark_log_dir, quark_log_file)
 out_file_path = os.path.join(quark_log_dir, quark_out_file)
-pid_file_path = os.path.join(quark_pid_file)
+pid_file_path = os.path.join(quark_log_dir, quark_pid_file)
 
 if java_home:
     java = os.path.join(java_home, 'bin', 'java')
 else:
     java = 'java'
-
-#    " -Xdebug -Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=n " + \
-#    " -XX:+UnlockCommercialFeatures -XX:+FlightRecorder -XX:FlightRecorderOptions=defaultrecording=true,dumponexit=true" + \
 
 # The command is run through subprocess so environment variables are automatically inherited
 java_cmd = '%(java)s -cp ' + \
@@ -141,6 +118,7 @@ if command == 'makeWinServiceDesc':
     print "</service>"
     sys.exit()
 
+
 if command == 'start':
     if not daemon_supported:
         print >> sys.stderr, "daemon mode not supported on this platform"
@@ -150,13 +128,13 @@ if command == 'start':
     d = os.path.dirname(out_file_path)
     if not os.path.exists(d):
         os.makedirs(d)
+
     with open(out_file_path, 'a+') as out:
         context = daemon.DaemonContext(
-                pidfile = pid_file_path,
+                pidfile = pidfile.PIDLockFile(pid_file_path),
                 stdout = out,
                 stderr = out,
         )
-        print 'starting Query Server, logging to %s' % log_file_path
         with context:
             # this block is the main() for the forked daemon process
             child = None
@@ -169,16 +147,16 @@ if command == 'start':
                 sys.exit(0)
             signal.signal(signal.SIGTERM, handler)
 
-            print '%s launching %s' % (datetime.datetime.now(), cmd)
             child = subprocess.Popen(cmd.split())
             sys.exit(child.wait())
+
 
 elif command == 'stop':
     if not daemon_supported:
         print >> sys.stderr, "daemon mode not supported on this platform"
         sys.exit(-1)
 
-    if not os.path.exists(pid_file_path):
+    if not os.path.exists(pid_file_path ):
         print >> sys.stderr, "no Query Server to stop because PID file not found, %s" % pid_file_path
         sys.exit(0)
 
