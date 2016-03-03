@@ -15,6 +15,9 @@ public class DbEndToEndTest extends EndToEndTest {
 
   public static String dbUrl = "jdbc:h2:mem:DbTpcds;DB_CLOSE_DELAY=-1";
   static {
+    String[] args = new String [1];
+    args[0] = "dbCatalog.json";
+    main = new Main(args);
     h2Url = "jdbc:h2:mem:DbServerTpcdsTest;DB_CLOSE_DELAY=-1";
     cubeUrl = "jdbc:h2:mem:DbServerTpcdsCubes;DB_CLOSE_DELAY=-1";
     viewUrl = "jdbc:h2:mem:DbServerTpcdsViews;DB_CLOSE_DELAY=-1";
@@ -23,9 +26,8 @@ public class DbEndToEndTest extends EndToEndTest {
   @BeforeClass
   public static void setUp() throws SQLException, IOException, URISyntaxException,
       ClassNotFoundException {
-    String[] args = new String [1];
-    args[0] = "dbCatalog.json";
-    new Thread(new Main(args)).start();
+
+    new Thread(main).start();
 
     Flyway flyway = new Flyway();
     flyway.setDataSource(dbUrl, "sa", "");

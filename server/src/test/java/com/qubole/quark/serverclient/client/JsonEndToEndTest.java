@@ -1,6 +1,7 @@
 package com.qubole.quark.serverclient.client;
 
 import com.qubole.quark.serverclient.server.Main;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 import java.io.IOException;
@@ -13,6 +14,9 @@ import java.sql.SQLException;
 public class JsonEndToEndTest extends EndToEndTest {
 
   static {
+    String[] args = new String [1];
+    args[0] = "jsonCatalog.json";
+    main = new Main(args);
     h2Url = "jdbc:h2:mem:JsonTpcdsTest;DB_CLOSE_DELAY=-1";
     cubeUrl = "jdbc:h2:mem:JsonTpcdsCubes;DB_CLOSE_DELAY=-1";
     viewUrl = "jdbc:h2:mem:JsonTpcdsViews;DB_CLOSE_DELAY=-1";
@@ -21,9 +25,8 @@ public class JsonEndToEndTest extends EndToEndTest {
   @BeforeClass
   public static void setUp() throws SQLException, IOException, URISyntaxException,
       ClassNotFoundException {
-    String[] args = new String [1];
-    args[0] = "jsonCatalog.json";
-    new Thread(new Main(args)).start();
+
+    new Thread(main).start();
 
     setupTables(h2Url, "tpcds.sql");
     setupTables(cubeUrl, "tpcds_cubes.sql");

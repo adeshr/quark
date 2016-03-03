@@ -28,6 +28,8 @@ import org.apache.calcite.avatica.server.HttpServer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import org.eclipse.jetty.server.Handler;
 
 import java.lang.management.ManagementFactory;
@@ -35,7 +37,6 @@ import java.lang.management.RuntimeMXBean;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A query server for Quark over Calcite's Avatica.
@@ -47,7 +48,6 @@ public final class Main implements Runnable {
   private final String[] argv;
   private final CountDownLatch runningLatch = new CountDownLatch(1);
   private HttpServer server = null;
-  private int retCode = 0;
   private Throwable t = null;
 
   /**
@@ -74,35 +74,9 @@ public final class Main implements Runnable {
   /**
    * @return the port number this instance is bound to, or {@code -1} if the server is not running.
    */
-  public int getPort() {
-    if (server == null) {
-      return -1;
-    }
-    return server.getPort();
-  }
-
-  /**
-   * @return the return code from running as a.
-   */
-  public int getRetCode() {
-    return retCode;
-  }
-
-  /**
-   * @return the throwable from an unsuccessful run, or null otherwise.
-   */
-  public Throwable getThrowable() {
-    return t;
-  }
-
-  /** Calling thread waits until the server is running. */
-  public void awaitRunning() throws InterruptedException {
-    runningLatch.await();
-  }
-
-  /** Calling thread waits until the server is running. */
-  public void awaitRunning(long timeout, TimeUnit unit) throws InterruptedException {
-    runningLatch.await(timeout, unit);
+  @VisibleForTesting
+  public HttpServer getServer() {
+    return server;
   }
 
   public void run(String[] args) throws Exception {

@@ -16,8 +16,10 @@
 package com.qubole.quark.serverclient.client;
 
 import com.qubole.quark.serverclient.server.Main;
-import org.flywaydb.core.Flyway;
-import org.junit.BeforeClass;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -32,7 +34,9 @@ import static org.hamcrest.Matchers.equalTo;
  * Created by adeshr on 2/24/16.
  */
 public abstract class EndToEndTest {
+  protected static final Log LOG = LogFactory.getLog(Main.class);
 
+  public static Main main;
   public static String h2Url;
   public static String cubeUrl;
   public static String viewUrl;
@@ -55,12 +59,32 @@ public abstract class EndToEndTest {
     stmt.execute(sql);
   }
 
+  @AfterClass
+  public static void afterClass() {
+    if (main.getServer() != null) {
+      main.getServer().stop();
+    }
+  }
+
   @Test
-  public void testClient() throws SQLException, ClassNotFoundException {
+  public void testClient() throws SQLException, ClassNotFoundException, InterruptedException {
     Class.forName("com.qubole.quark.jdbc.QuarkDriver");
     QuarkDriver d = new QuarkDriver();
     Class.forName("org.h2.Driver");
-    Connection connection = d.connect(ThinClientUtil.getConnectionUrl("0.0.0.0", 8765), new Properties());
+    Connection connection = null;
+
+    // Due to threading, server might not be up.
+    for (int i=0; i<2; i++) {
+       try {
+         connection = d.connect(ThinClientUtil.getConnectionUrl("0.0.0.0", 8765), new Properties());
+       } catch (RuntimeException e) {
+          if (e.getMessage().contains("Connection refused")) {
+            Thread.sleep(2000);
+          } else {
+            throw new RuntimeException(e);
+          }
+       }
+    }
 
     String query = "select * from canonical.public.web_returns";
     ResultSet resultSet = connection.createStatement().executeQuery(query);
