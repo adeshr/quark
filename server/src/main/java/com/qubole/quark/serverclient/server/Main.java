@@ -110,15 +110,17 @@ public final class Main implements Runnable {
     try {
 
       Class<? extends Meta.Factory> factoryClass = QuarkMetaFactoryImpl.class;
-      int port = 8765;
-      if (args.length > 1) {
-        port = Integer.parseInt(args[1]);
-      }
 
-      LOG.debug("Listening on port " + port);
       Meta.Factory factory =
           factoryClass.getDeclaredConstructor().newInstance();
       Meta meta = factory.create(Arrays.asList(args));
+
+      int port = 8765;
+      if (QuarkMetaFactoryImpl.catalogDetail.port != 0) {
+        port = QuarkMetaFactoryImpl.catalogDetail.port;
+      }
+      LOG.debug("Listening on port " + port);
+
       final HandlerFactory handlerFactory = new HandlerFactory();
       Service service = new LocalService(meta);
       server = new HttpServer(port, getHandler(service, handlerFactory));

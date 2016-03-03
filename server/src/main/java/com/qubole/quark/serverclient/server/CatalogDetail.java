@@ -26,11 +26,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class CatalogDetail {
   public final String dbCredentials;
   public final String schemaFactory;
+  public final int port;
 
   @JsonCreator
   public CatalogDetail(@JsonProperty("dbCredentials") String dbCredentials,
-                       @JsonProperty("schemaFactory") String schemaFactory) {
+                       @JsonProperty("schemaFactory") String schemaFactory,
+                       @JsonProperty("port") int port) {
     this.dbCredentials = dbCredentials;
     this.schemaFactory = schemaFactory;
+    this.port = port;
   }
 }

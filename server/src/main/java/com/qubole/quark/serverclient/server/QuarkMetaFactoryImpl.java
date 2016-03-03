@@ -31,7 +31,7 @@ import java.util.Properties;
  * Bridge between Quark and Avatica.
  */
 public class QuarkMetaFactoryImpl implements Meta.Factory {
-
+  public static CatalogDetail catalogDetail;
   // invoked via reflection
   public QuarkMetaFactoryImpl() {
     super();
@@ -42,12 +42,11 @@ public class QuarkMetaFactoryImpl implements Meta.Factory {
     Properties props = new Properties();
     String url = "jdbc:quark:";
     try {
-      if (args.size() == 1 || args.size() == 2) {
+      if (args.size() == 1) {
         // Find absolute file path to load json
         String filePath = getClass().getResource("/" + args.get(0)).getPath();
         ObjectMapper objectMapper = new ObjectMapper();
-        CatalogDetail catalogDetail =
-            objectMapper.readValue(new File(filePath), CatalogDetail.class);
+        catalogDetail = objectMapper.readValue(new File(filePath), CatalogDetail.class);
 
         // If dbCredentials are not present, than json Catalog is present in file
         if (catalogDetail.dbCredentials == null && catalogDetail.schemaFactory == null) {
@@ -59,7 +58,7 @@ public class QuarkMetaFactoryImpl implements Meta.Factory {
 
       } else {
         throw new RuntimeException(
-            "1 or 2 argument expected. Received " + Arrays.toString(args.toArray()));
+            "1 argument expected. Received " + Arrays.toString(args.toArray()));
       }
       return new JdbcMeta(url, props);
     } catch (SQLException | IOException e) {
