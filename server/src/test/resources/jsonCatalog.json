@@ -7,7 +7,7 @@
       "password": "",
       "factory": "com.qubole.quark.plugins.jdbc.JdbcFactory",
       "type": "H2",
-      "url": "jdbc:h2:mem:TpcdsTest;DB_CLOSE_DELAY=-1",
+      "url": "jdbc:h2:mem:JsonTpcdsTest;DB_CLOSE_DELAY=-1",
       "username": "sa"
     },
     {
@@ -15,7 +15,7 @@
       "password": "",
       "factory": "com.qubole.quark.plugins.jdbc.JdbcFactory",
       "type": "H2",
-      "url": "jdbc:h2:mem:TpcdsViews;DB_CLOSE_DELAY=-1",
+      "url": "jdbc:h2:mem:JsonTpcdsViews;DB_CLOSE_DELAY=-1",
       "username": "sa",
       "default" : "false"
     },
@@ -24,7 +24,7 @@
       "password": "",
       "factory": "com.qubole.quark.plugins.jdbc.JdbcFactory",
       "type": "H2",
-      "url": "jdbc:h2:mem:TpcdsCubes;DB_CLOSE_DELAY=-1",
+      "url": "jdbc:h2:mem:JsonTpcdsCubes;DB_CLOSE_DELAY=-1",
       "username": "sa",
       "default" : "false"
     }

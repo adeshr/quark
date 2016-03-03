@@ -16,6 +16,7 @@
 package com.qubole.quark.serverclient.client;
 
 import com.qubole.quark.serverclient.server.Main;
+import org.flywaydb.core.Flyway;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -30,23 +31,11 @@ import static org.hamcrest.Matchers.equalTo;
 /**
  * Created by adeshr on 2/24/16.
  */
-public class EndToEndTest {
+public abstract class EndToEndTest {
 
-  public static final String h2Url = "jdbc:h2:mem:TpcdsTest;DB_CLOSE_DELAY=-1";
-  public static final String cubeUrl = "jdbc:h2:mem:TpcdsCubes;DB_CLOSE_DELAY=-1";
-  public static final String viewUrl = "jdbc:h2:mem:TpcdsViews;DB_CLOSE_DELAY=-1";
-
-  @BeforeClass
-  public static void setUp() throws SQLException, IOException, URISyntaxException,
-      ClassNotFoundException {
-    String[] args = new String [1];
-    args[0] = "jsonCatalog.json";
-    new Thread(new Main(args)).start();
-
-    setupTables(h2Url, "tpcds.sql");
-    setupTables(cubeUrl, "tpcds_cubes.sql");
-    setupTables(viewUrl, "tpcds_views.sql");
-  }
+  public static String h2Url;
+  public static String cubeUrl;
+  public static String viewUrl;
 
   public static void setupTables(String dbUrl, String filename)
       throws ClassNotFoundException, SQLException, IOException, URISyntaxException {
