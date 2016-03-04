@@ -55,11 +55,10 @@ public class QuarkMetaFactoryImpl implements Meta.Factory {
         catalogDetail = objectMapper.readValue(new File(filePath), CatalogDetail.class);
 
         // If dbCredentials are not present, than json Catalog is present in file
-        if (catalogDetail.dbCredentials == null && catalogDetail.schemaFactory == null) {
+        if (catalogDetail.dbCredentials == null) {
           url = url + filePath;
         } else if (catalogDetail.dbCredentials != null) {
           props.put("dbCredentials", catalogDetail.dbCredentials);
-          props.put("schemaFactory", catalogDetail.schemaFactory);
         }
 
       } else {
