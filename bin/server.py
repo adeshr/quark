@@ -93,8 +93,7 @@ else:
 
 # The command is run through subprocess so environment variables are automatically inherited
 java_cmd = '%(java)s -cp ' + quark_server_jar + \
-           " -Dproc_quarkserver" + " -Dpsql.root.logger=%(root_logger)s" + \
-           " com.qubole.quark.serverclient.server.Main " + args
+           " -Dproc_quarkserver" + " com.qubole.quark.serverclient.server.Main " + args
 
 if command == 'makeWinServiceDesc':
     cmd = java_cmd % {'java': java, 'root_logger': 'INFO'}
