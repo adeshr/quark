@@ -39,7 +39,7 @@
     <dependency>
       <groupId>org.apache.calcite</groupId>
       <artifactId>calcite-avatica</artifactId>
-      <version>1.6.0</version>
+      <version>{calcite.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.calcite</groupId>
