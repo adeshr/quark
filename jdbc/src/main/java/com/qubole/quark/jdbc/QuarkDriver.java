@@ -101,8 +101,12 @@ public class QuarkDriver extends UnregisteredDriver {
         ((QuarkConnectionImpl) connection).getProperties());
   }
 
-  public String getSchemaFactoryPath() {
+  public String getJsonSchemaFactoryPath() {
     return "com.qubole.quark.catalog.json.SchemaFactory";
+  }
+
+  public String getDbSchemaFactoryPath() {
+    return "com.qubole.quark.catalog.db.SchemaFactory";
   }
 
   public Connection connect(String url, Properties info) throws SQLException {
@@ -110,8 +114,10 @@ public class QuarkDriver extends UnregisteredDriver {
       return null;
     }
 
-    if (info.getProperty("schemaFactory") == null) {
-      info.setProperty("schemaFactory", getSchemaFactoryPath());
+    if (info.getProperty("dbCredentials") == null) {
+      info.setProperty("schemaFactory", getJsonSchemaFactoryPath());
+    } else {
+      info.setProperty("schemaFactory", getDbSchemaFactoryPath());
     }
 
     if (info.getProperty("model") == null && info.getProperty("dbCredentials") == null) {

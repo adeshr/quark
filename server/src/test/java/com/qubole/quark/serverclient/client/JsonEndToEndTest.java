@@ -15,7 +15,7 @@ public class JsonEndToEndTest extends EndToEndTest {
 
   static {
     String[] args = new String [1];
-    args[0] = "jsonCatalog.json";
+    args[0] = JsonEndToEndTest.class.getResource("/jsonCatalog.json").getPath();
     main = new Main(args);
     h2Url = "jdbc:h2:mem:JsonTpcdsTest;DB_CLOSE_DELAY=-1";
     cubeUrl = "jdbc:h2:mem:JsonTpcdsCubes;DB_CLOSE_DELAY=-1";

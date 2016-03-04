@@ -21,6 +21,9 @@ package com.qubole.quark.serverclient.server;
 import org.apache.calcite.avatica.Meta;
 import org.apache.calcite.avatica.jdbc.JdbcMeta;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -34,6 +37,7 @@ import java.util.Properties;
  * Bridge between Quark and Avatica.
  */
 public class QuarkMetaFactoryImpl implements Meta.Factory {
+  protected static final Log LOG = LogFactory.getLog(Main.class);
   public static CatalogDetail catalogDetail;
   // invoked via reflection
   public QuarkMetaFactoryImpl() {
@@ -46,8 +50,7 @@ public class QuarkMetaFactoryImpl implements Meta.Factory {
     String url = "jdbc:quark:";
     try {
       if (args.size() == 1) {
-        // Find absolute file path to load json
-        String filePath = getClass().getResource("/" + args.get(0)).getPath();
+        String filePath = args.get(0);
         ObjectMapper objectMapper = new ObjectMapper();
         catalogDetail = objectMapper.readValue(new File(filePath), CatalogDetail.class);
 

@@ -79,18 +79,12 @@ if os.name == 'nt':
 else:
     import pipes    # pipes module isn't available on Windows
     args = " ".join([pipes.quote(v) for v in args])
-
 java_home = os.getenv('JAVA_HOME')
 
 quark_log_dir = os.path.dirname(os.path.abspath(__file__))
-quark_file_basename = 'quark-server-%s' % getpass.getuser()
-quark_log_file = '%s.log' % quark_file_basename
-quark_out_file = '%s.out' % quark_file_basename
-quark_pid_file = '%s.pid' % quark_file_basename
 
-log_file_path = os.path.join(quark_log_dir, quark_log_file)
-out_file_path = os.path.join(quark_log_dir, quark_out_file)
-pid_file_path = os.path.join(quark_log_dir, quark_pid_file)
+out_file_path = os.path.join(quark_log_dir, "quark-server.log")
+pid_file_path = os.path.join(quark_log_dir, "quark-server.pid")
 
 if java_home:
     java = os.path.join(java_home, 'bin', 'java')
@@ -98,16 +92,12 @@ else:
     java = 'java'
 
 # The command is run through subprocess so environment variables are automatically inherited
-java_cmd = '%(java)s -cp ' + \
-           quark_server_jar + \
-           " -Dproc_quarkserver" + \
-           " -Dpsql.root.logger=%(root_logger)s" + \
-           " -Dpsql.log.dir=%(log_dir)s" + \
-           " -Dpsql.log.file=%(log_file)s" + \
+java_cmd = '%(java)s -cp ' + quark_server_jar + \
+           " -Dproc_quarkserver" + " -Dpsql.root.logger=%(root_logger)s" + \
            " com.qubole.quark.serverclient.server.Main " + args
 
 if command == 'makeWinServiceDesc':
-    cmd = java_cmd % {'java': java, 'root_logger': 'INFO,DRFA,console', 'log_dir': quark_log_dir, 'log_file': quark_log_file}
+    cmd = java_cmd % {'java': java, 'root_logger': 'INFO'}
     slices = cmd.split(' ')
 
     print "<service>"
@@ -138,7 +128,7 @@ if command == 'start':
         with context:
             # this block is the main() for the forked daemon process
             child = None
-            cmd = java_cmd % {'java': java, 'root_logger': 'INFO', 'log_dir': quark_log_dir, 'log_file': quark_log_file}
+            cmd = java_cmd % {'java': java, 'root_logger': 'INFO'}
 
             # notify the child when we're killed
             def handler(signum, frame):
@@ -176,6 +166,6 @@ elif command == 'stop':
     os.kill(pid, signal.SIGTERM)
 
 else:
-    cmd = java_cmd % {'java': java, 'root_logger': 'INFO,console', 'log_dir': '.', 'log_file': 'psql.log'}
+    cmd = java_cmd % {'java': java, 'root_logger': 'INFO'}
     child = subprocess.Popen(cmd.split())
     sys.exit(child.wait())
